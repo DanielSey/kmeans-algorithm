@@ -8,12 +8,14 @@ namespace kmeans
 {
     class Generator
     {
-        private int size;
+        private int numberOfPoints;
+        private int maxCoord;
         private List<Point> points;
 
-        public Generator(int size)
+        public Generator(int numberOfPoints, int maxCoord)
         {
-            this.size = size;
+            this.numberOfPoints = numberOfPoints;
+            this.maxCoord = maxCoord;
         }
 
         public List<Point> Generate()
@@ -21,26 +23,14 @@ namespace kmeans
             points = new List<Point>();
             Random rnd = new Random(Guid.NewGuid().GetHashCode());
 
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < numberOfPoints; i++)
             {
-                int x = rnd.Next(1, 101); // random between 1 and 100
-                int y = rnd.Next(1, 101);
+                int x = rnd.Next(1, maxCoord + 1);
+                int y = rnd.Next(1, maxCoord + 1);
                 points.Add(new Point((i + 1), x, y));
             }
 
             return points;
-        }
-
-        public void PrintGeneratedPoints()
-        {
-            Console.WriteLine("----- List of points (count: " + points.Count + ") -----");
-
-            for (int i = 0; i < points.Count; i++)
-            {
-                Console.WriteLine("Point " + points[i].Id + ", X: " + points[i].X + ", Y: " + points[i].Y + ", cluster: " + points[i].Cluster + ", deleted: " + points[i].Deleted + ", newPoint: " + points[i].NewPoint);
-            }
-
-            Console.WriteLine();
         }
     }
 }

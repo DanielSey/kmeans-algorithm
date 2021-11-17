@@ -8,16 +8,18 @@ namespace kmeans
 {
     class KMeans
     {
-        private int maxClusters;
-        private int size;
+        private int numberOfClusters;
+        private int numberOfPoints;
+        private int maxCoord;
         private List<Point> points;
         private List<PointsDistances> distances;
 
-        public KMeans(int maxClusters, int size, List<Point> points)
+        public KMeans(int numberOfClusters, int numberOfPoints, List<Point> points, int maxCoord)
         {
-            this.maxClusters = maxClusters;
-            this.size = size;
+            this.numberOfClusters = numberOfClusters;
+            this.numberOfPoints = numberOfPoints;
             this.points = points;
+            this.maxCoord = maxCoord;
             CreateDistanceMatrix();
         }
 
@@ -25,9 +27,9 @@ namespace kmeans
         {
             distances = new List<PointsDistances>();
 
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < numberOfPoints; i++)
             {
-                for (int j = i; j < size; j++) // j = i
+                for (int j = i; j < numberOfPoints; j++) // j = i
                 {
                     double p_distance = Distance(points[i].X, points[i].Y, points[j].X, points[j].Y);
 
@@ -43,9 +45,9 @@ namespace kmeans
         {
             int cluster = 1;
             int id = points.Count;
-            int stopCount = size;
+            int stopCount = numberOfPoints;
 
-            while (stopCount > maxClusters) {
+            while (stopCount > numberOfClusters) {
                 // find minimal distance
                 PointsDistances minDistance = FindMin();
                 //Console.WriteLine("Found min. distance: " + minDistance.Distance + Environment.NewLine);  // delete after
@@ -97,7 +99,6 @@ namespace kmeans
                 points.Add(newPoint);
 
                 // compute new distances
-                //PrintPoints(); // delete after
                 distances.Clear();
 
                 for (int i = 0; i < points.Count; i++)
@@ -121,7 +122,14 @@ namespace kmeans
                 stopCount--;
             }
 
-            PrintClusters();
+            // remove all new points
+            for (int i = points.Count - 1; i >= 0; i--)
+            {
+                if (points[i].NewPoint)
+                {
+                    points.RemoveAt(i);
+                }
+            }
         }
 
         private PointsDistances FindMin()
@@ -155,6 +163,7 @@ namespace kmeans
 
             return pointsDistances;
         }
+
         private double Distance(double x1, double y1, double x2, double y2)
         {
             return Math.Sqrt(Math.Pow((x1 - x2), 2) + Math.Pow((y1 - y2), 2));
@@ -173,30 +182,15 @@ namespace kmeans
             Console.WriteLine();
         }
 
-        public void PrintPoints()
-        {
-            Console.WriteLine("----- List of points (count: " + points.Count + ") -----");
-
-            for (int i = 0; i < points.Count; i++)
-            {
-                Console.WriteLine("Point " + points[i].Id + ", X: " + points[i].X + ", Y: " + points[i].Y + ", cluster: " + points[i].Cluster + ", deleted: " + points[i].Deleted + ", newPoint: " + points[i].NewPoint);
-            }
-
-            Console.WriteLine();
-        }
-
         public void PrintClusters()
         {
-            Console.WriteLine("----- Clusters (count: " + maxClusters + ") -----");
+            Console.WriteLine("----- Clusters (count: " + numberOfClusters + ") -----");
 
             //https://www.geeksforgeeks.org/counting-frequencies-of-array-elements/
 
             Dictionary<int, int> mp = new Dictionary<int, int>();
 
-            // Traverse through array elements and
-            // count frequencies
-
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < points.Count; i++)
             {
                 if (mp.ContainsKey(points[i].Cluster))
                 {
@@ -210,12 +204,7 @@ namespace kmeans
                 }
             }
 
-            // To print elements according to first
-            // occurrence, traverse array one more time
-            // print frequencies of elements and mark
-            // frequencies as -1 so that same element
-            // is not printed multiple times.
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < points.Count; i++)
             {
                 if (mp.ContainsKey(points[i].Cluster) && mp[points[i].Cluster] != -1)
                 {

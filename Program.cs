@@ -11,28 +11,33 @@ namespace kmeans
     {
         static void Main(string[] args)
         {
-            Stopwatch sw = new Stopwatch();
-
             // generating
-            Console.Write("Generating data...");
-            int size = 500;
-            Generator _generator = new Generator(size);
+            Console.Write("Generating data... ");
+            int numberOfPoints = 300;
+            int maxCoord = 100;
+            Generator _generator = new Generator(numberOfPoints, maxCoord);
             List<Point> points = _generator.Generate();
-            //_generator.PrintGeneratedPoints();
+            //Helper.PrintPoints(points);
+            new Visualization(points, maxCoord).CreateImage("generated");
             Console.WriteLine("\tDone!");
 
 
+
             // clustering
-            Console.WriteLine("Start clustering..." + Environment.NewLine);
+            Console.Write("Start clustering...");
+            Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            int clusters = 5;
-            KMeans _kMeans = new KMeans(clusters, size, points);
+            int numberOfClusters = 3;
+            KMeans _kMeans = new KMeans(numberOfClusters, numberOfPoints, points, maxCoord);
             //_kMeans.PrintDistanceMatrix();
             _kMeans.Clustering();
 
             sw.Stop();
-            Console.WriteLine("Total time: {0}", sw.Elapsed);
+            Console.WriteLine("\tDone! Total time: " + sw.Elapsed + Environment.NewLine);
+
+            _kMeans.PrintClusters();
+            new Visualization(points, maxCoord).CreateImage("final");
         }
     }
 }
