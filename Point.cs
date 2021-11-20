@@ -12,16 +12,16 @@ namespace kmeans
         public int X { get; set; }
         public int Y { get; set; }
         public int Cluster { get; set; }
-        public bool Deleted { get; set; }
+        public bool Centroid { get; set; }
         public bool NewPoint { get; set; }
 
-        public Point (int id, int x, int y, int cluster = 0, bool deleted = false, bool newPoint = false)
+        public Point (int id, int x, int y, int cluster = 0, bool centroid = false, bool newPoint = false)
         {
             Id = id;
             X = x;
             Y = y;
             Cluster = cluster;
-            Deleted = deleted;
+            Centroid = centroid;
             NewPoint = newPoint;
         }
     }

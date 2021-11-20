@@ -14,7 +14,7 @@ namespace kmeans
 
             for (int i = 0; i < points.Count; i++)
             {
-                Console.WriteLine("Point " + points[i].Id + ", X: " + points[i].X + ", Y: " + points[i].Y + ", cluster: " + points[i].Cluster + ", deleted: " + points[i].Deleted + ", newPoint: " + points[i].NewPoint);
+                Console.WriteLine("Point " + points[i].Id + ", X: " + points[i].X + ", Y: " + points[i].Y + ", cluster: " + points[i].Cluster + ", centroid: " + points[i].Centroid + ", newPoint: " + points[i].NewPoint);
             }
 
             Console.WriteLine();

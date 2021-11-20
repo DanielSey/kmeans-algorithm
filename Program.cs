@@ -13,15 +13,11 @@ namespace kmeans
         {
             // generating
             Console.Write("Generating data... ");
-            int numberOfPoints = 300;
+            int numberOfPoints = 20;
             int maxCoord = 100;
             Generator _generator = new Generator(numberOfPoints, maxCoord);
             List<Point> points = _generator.Generate();
-            //Helper.PrintPoints(points);
-            new Visualization(points, maxCoord).CreateImage("generated");
             Console.WriteLine("\tDone!");
-
-
 
             // clustering
             Console.Write("Start clustering...");
@@ -29,15 +25,18 @@ namespace kmeans
             sw.Start();
 
             int numberOfClusters = 3;
-            KMeans _kMeans = new KMeans(numberOfClusters, numberOfPoints, points, maxCoord);
-            //_kMeans.PrintDistanceMatrix();
+            KMeans _kMeans = new KMeans(numberOfClusters, points, maxCoord);
+            //List<Point> lastCentroids = _kMeans.GetLastCentroids();
+            //new Visualization(points, maxCoord, lastCentroids).CreateImage("generated");
+
             _kMeans.Clustering();
 
             sw.Stop();
             Console.WriteLine("\tDone! Total time: " + sw.Elapsed + Environment.NewLine);
 
             _kMeans.PrintClusters();
-            new Visualization(points, maxCoord).CreateImage("final");
+            //lastCentroids = _kMeans.GetLastCentroids();
+            //new Visualization(points, maxCoord, lastCentroids, true).CreateImage("final");
         }
     }
 }

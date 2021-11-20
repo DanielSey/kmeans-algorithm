@@ -10,11 +10,16 @@ namespace kmeans
     class Visualization
     {
         private List<Point> points;
+        private List<Point> centroids;
         private Bitmap bitmap;
+        private bool colorful;
+        private int bounder = 10;
 
-        public Visualization(List<Point> points, int maxCoord)
+        public Visualization(List<Point> points, int maxCoord, List<Point> centroids, bool colorful = false)
         {
+            this.colorful = colorful;
             this.points = points;
+            this.centroids = centroids;
             bitmap = new Bitmap(maxCoord + 5, maxCoord + 5);
             FillBackground();
         }
@@ -32,12 +37,12 @@ namespace kmeans
         public void CreateImage(string name)
         {
             List<int> finalClusters = CountClusters();
-            Console.WriteLine(finalClusters.Count);
-            if (finalClusters.Count <= 1)
+
+            if (!colorful)
             {
-                for (int j = 0; j < points.Count; j++)
+                for (int i = 0; i < points.Count; i++)
                 {
-                    bitmap.SetPixel(points[j].X, points[j].Y, Color.White);
+                    bitmap.SetPixel(points[i].X, points[i].Y, Color.White);
                 }
             }
             else
@@ -53,6 +58,39 @@ namespace kmeans
                         {
                             bitmap.SetPixel(points[j].X, points[j].Y, randomColor);
                         }
+                    }
+                }
+            }
+
+            //higlight centroids
+            for (int i = 0; i < centroids.Count; i++)
+            {
+                for (int a = 0; a < bounder; a++)
+                {
+                    for (int b = 0; b < bounder; b++)
+                    {
+                        int x = centroids[i].X + a;
+                        int y = centroids[i].Y + b;
+
+                        //if (x < 0)
+                        //{
+                        //    x = 0;
+                        //}
+                        //if (x > bitmap.Width - bounder)
+                        //{
+                        //    x = bitmap.Width - bounder;
+                        //}
+
+                        //if (y < 0)
+                        //{
+                        //    y = 0;
+                        //}
+                        //if (y > bitmap.Height - bounder)
+                        //{
+                        //    y = bitmap.Height - bounder;
+                        //}
+
+                        bitmap.SetPixel(x, y, Color.Red);
                     }
                 }
             }
