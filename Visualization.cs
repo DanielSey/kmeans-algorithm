@@ -10,19 +10,19 @@ namespace kmeans
     class Visualization
     {
         private List<Point> points;
-        private List<Point> centroids;
+        private List<Centroid> centroids;
         private Bitmap bitmap;
         private bool colorful;
-        private int bounder = 10;
 
-        public Visualization(List<Point> points, int maxCoord, List<Point> centroids, bool colorful = false)
+        public Visualization(List<Point> points, List<Centroid> centroids, int maxCoord, bool colorful = false)
         {
-            this.colorful = colorful;
             this.points = points;
             this.centroids = centroids;
+            this.colorful = colorful;
             bitmap = new Bitmap(maxCoord + 5, maxCoord + 5);
             FillBackground();
         }
+
         private void FillBackground()
         {
             for (var x = 0; x < bitmap.Width; x++)
@@ -36,59 +36,36 @@ namespace kmeans
 
         public void CreateImage(string name)
         {
-            List<int> finalClusters = CountClusters();
-
-            if (!colorful)
+            if (!colorful) // generated points.. all white
             {
                 for (int i = 0; i < points.Count; i++)
                 {
-                    bitmap.SetPixel(points[i].X, points[i].Y, Color.White);
+                    bitmap.SetPixel((int)points[i].X, (int)points[i].Y, Color.White);
                 }
             }
-            else
+            else // final clusters with colors
             {
-                for (int i = 0; i < finalClusters.Count; i++)
+                for (int i = 0; i < centroids.Count; i++)
                 {
-                    Random rnd = new Random(Guid.NewGuid().GetHashCode());
-                    Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-
-                    for (int j = 0; j < points.Count; j++)
-                    {
-                        if (finalClusters[i] == points[j].Cluster)
-                        {
-                            bitmap.SetPixel(points[j].X, points[j].Y, randomColor);
-                        }
-                    }
+                    Colorful(centroids[i]);
                 }
             }
 
             //higlight centroids
             for (int i = 0; i < centroids.Count; i++)
             {
-                for (int a = 0; a < bounder; a++)
+                //bitmap.SetPixel((int)centroids[i].X, (int)centroids[i].Y, Color.Red);
+                //bitmap.SetPixel((int)centroids[i].X + 1, (int)centroids[i].Y + 1, Color.Red);
+                //bitmap.SetPixel((int)centroids[i].X + 1, (int)centroids[i].Y - 1, Color.Red);
+                //bitmap.SetPixel((int)centroids[i].X - 1, (int)centroids[i].Y - 1, Color.Red);
+                //bitmap.SetPixel((int)centroids[i].X - 1, (int)centroids[i].Y + 1, Color.Red);
+
+                for (int a = 0; a < 20; a++)
                 {
-                    for (int b = 0; b < bounder; b++)
+                    for (int b = 0; b < 20; b++)
                     {
-                        int x = centroids[i].X + a;
-                        int y = centroids[i].Y + b;
-
-                        //if (x < 0)
-                        //{
-                        //    x = 0;
-                        //}
-                        //if (x > bitmap.Width - bounder)
-                        //{
-                        //    x = bitmap.Width - bounder;
-                        //}
-
-                        //if (y < 0)
-                        //{
-                        //    y = 0;
-                        //}
-                        //if (y > bitmap.Height - bounder)
-                        //{
-                        //    y = bitmap.Height - bounder;
-                        //}
+                        int x = (int)centroids[i].X + a - 10;
+                        int y = (int)centroids[i].Y + b - 10;
 
                         bitmap.SetPixel(x, y, Color.Red);
                     }
@@ -97,38 +74,17 @@ namespace kmeans
 
             bitmap.Save(name + ".jpg");
         }
-        private List<int> CountClusters()
+
+        private void Colorful(Centroid centroid)
         {
-            // https://www.geeksforgeeks.org/counting-frequencies-of-array-elements/
+            List<Point> centroidPoints = centroid.GetClosestPoints();
+            Random rnd = new Random(Guid.NewGuid().GetHashCode());
+            Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
 
-            List<int> finalClusters = new List<int>();
-            Dictionary<int, int> mp = new Dictionary<int, int>();
-
-            for (int i = 0; i < points.Count; i++)
+            for (int i = 0; i < centroidPoints.Count; i++)
             {
-                if (mp.ContainsKey(points[i].Cluster))
-                {
-                    var val = mp[points[i].Cluster];
-                    mp.Remove(points[i].Cluster);
-                    mp.Add(points[i].Cluster, val + 1);
-                }
-                else
-                {
-                    mp.Add(points[i].Cluster, 1);
-                }
+                bitmap.SetPixel((int)centroidPoints[i].X, (int)centroidPoints[i].Y, randomColor);
             }
-
-            for (int i = 0; i < points.Count; i++)
-            {
-                if (mp.ContainsKey(points[i].Cluster) && mp[points[i].Cluster] != -1)
-                {
-                    finalClusters.Add(points[i].Cluster); // for visualization
-                    mp.Remove(points[i].Cluster);
-                    mp.Add(points[i].Cluster, -1);
-                }
-            }
-
-            return finalClusters;
         }
     }
 }

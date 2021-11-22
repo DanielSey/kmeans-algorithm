@@ -13,30 +13,36 @@ namespace kmeans
         {
             // generating
             Console.Write("Generating data... ");
-            int numberOfPoints = 20;
-            int maxCoord = 100;
+            int numberOfPoints = 10000000;
+            int maxCoord = 3000;
             Generator _generator = new Generator(numberOfPoints, maxCoord);
             List<Point> points = _generator.Generate();
             Console.WriteLine("\tDone!");
 
-            // clustering
+            // Clustering
             Console.Write("Start clustering...");
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            int numberOfClusters = 3;
-            KMeans _kMeans = new KMeans(numberOfClusters, points, maxCoord);
-            //List<Point> lastCentroids = _kMeans.GetLastCentroids();
-            //new Visualization(points, maxCoord, lastCentroids).CreateImage("generated");
+            List<Centroid> centroids = new List<Centroid>();
+            Random rnd = new Random(Guid.NewGuid().GetHashCode());
 
-            _kMeans.Clustering();
+            // generate random centroids
+            int numberOfClusters = 3;
+            for (int i = 0; i < numberOfClusters; i++)
+            {
+                double x = rnd.NextDouble() * ((maxCoord + 1) - 1) + 1;
+                double y = rnd.NextDouble() * ((maxCoord + 1) - 1) + 1;
+
+                centroids.Add(new Centroid(x, y));
+            }
+
+            int numberOfThreads = 12; // ryzen powa :-D
+            KMeans _kMeans = new KMeans(points, centroids, maxCoord, numberOfThreads);
+            _kMeans.RunKMeans();
 
             sw.Stop();
-            Console.WriteLine("\tDone! Total time: " + sw.Elapsed + Environment.NewLine);
-
-            _kMeans.PrintClusters();
-            //lastCentroids = _kMeans.GetLastCentroids();
-            //new Visualization(points, maxCoord, lastCentroids, true).CreateImage("final");
+            Console.WriteLine("\tDone! Total time: " + sw.Elapsed);
         }
     }
 }

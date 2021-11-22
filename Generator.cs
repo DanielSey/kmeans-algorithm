@@ -25,8 +25,9 @@ namespace kmeans
 
             for (int i = 0; i < numberOfPoints; i++)
             {
-                int x = rnd.Next(1, maxCoord + 1);
-                int y = rnd.Next(1, maxCoord + 1);
+                double x = rnd.NextDouble() * ((maxCoord + 1) - 1) + 1;
+                double y = rnd.NextDouble() * ((maxCoord + 1) - 1) + 1;
+
                 points.Add(new Point((i + 1), x, y));
             }
 
